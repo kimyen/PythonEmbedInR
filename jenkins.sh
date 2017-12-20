@@ -2,8 +2,14 @@
 ## build the artifacts and install the package
 ## for the active R version
 
+set -e
 ## create the temporary library directory
 mkdir -p ../RLIB
+
+## Install required R libraries
+ R -e "list.of.packages <- c('pack', 'R6', 'testthat');\
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,'Package'])];\
+if(length(new.packages)) install.packages(new.packages, repos='http://cran.fhcrc.org')"
 
 ## export the jenkins-defined environment variables
 export label
@@ -13,13 +19,10 @@ PACKAGE_NAME=PythonEmbedInR
 # if version is specified, build the given version
 if [ -n ${VERSION} ] 
 then
-  # replace DESCRIPTION with $VERSION
-  VERSION_LINE=`grep Version DESCRIPTION`
-  sed "s|$VERSION_LINE|Version: $VERSION|g" DESCRIPTION > DESCRIPTION.temp
-  # replace DESCRIPTION with $VERSION
   DATE=`date +%Y-%m-%d`
-  DATE_LINE=`grep Date DESCRIPTION.temp`
-  sed "s|$DATE_LINE|Date: $DATE|g" DESCRIPTION.temp > DESCRIPTION2.temp
+  # replace DESCRIPTION with $VERSION & $DATE
+  sed "s|^Version: .*$|Version: $VERSION|g" DESCRIPTION > DESCRIPTION.temp
+  sed "s|^Date: .*$|Date: $DATE|g" DESCRIPTION.temp > DESCRIPTION2.temp
 
   rm DESCRIPTION
   mv DESCRIPTION2.temp DESCRIPTION
@@ -42,7 +45,7 @@ then
   	echo "Linux artifact was not created"
   	exit 1
   fi  
-elif [ $label = osx ] || [ $label = osx-lion ] || [ $label = osx-leopard ]
+elif [ $label = osx ] || [ $label = osx-lion ] || [ $label = osx-leopard ] || [ $label = MacOS-10.11 ]
 then
   ## build the package, including the vignettes
   # for some reason latex is not on the path.  So we add it.
@@ -56,7 +59,7 @@ then
   ## build the binary for MacOS
   for f in ${PACKAGE_NAME}_${PACKAGE_VERSION}.tar.gz
   do
-     R CMD INSTALL --build "$f" --library=../RLIB --no-test-load
+     R CMD INSTALL --build "$f" --library=../RLIB --no-test-load --force-biarch
   done
 
   ## Now fix the binaries, per SYNR-341:
@@ -127,24 +130,9 @@ else
   exit 1
 fi
 
-## TODO: put this in a test file
 R -e ".libPaths('../RLIB');\
-  library(PythonEmbedInR);\
-  pyExec('import platform');\
-  result<-pyGet('platform.python_version()');\
-  expected<-'3.5.3';\
-  if (is.null(result)) stop('Python version is unexpectedly null.');\
-  if (length(grep(expected, result))==0) stop(sprintf('Expected %s in the version string but found %s', expected, result));\
-  cat(sprintf('Python version string: %s ', result));\
-
-  pyImport('pip');\
-  pyImport('ssl');\
-  pyGet('ssl.OPENSSL_VERSION');\
-
-  testPackage<-'ggplot2';\
-  try(remove.packages(testPackage), silent=T);\
-  install.packages(testPackage, repos='https://cran.cnr.berkeley.edu/');\
-  library(testPackage, character.only=T)"
+  setwd(sprintf('%s/tests', getwd()));\
+  source('testthat.R')"
 
 ## clean up the temporary R library dir
 rm -rf ../RLIB
