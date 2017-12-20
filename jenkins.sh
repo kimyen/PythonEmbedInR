@@ -59,7 +59,7 @@ then
   ## build the binary for MacOS
   for f in ${PACKAGE_NAME}_${PACKAGE_VERSION}.tar.gz
   do
-     R CMD INSTALL --build "$f" --library=../RLIB --no-test-load
+     R CMD INSTALL --build "$f" --library=../RLIB --no-test-load --force-biarch
   done
 
   ## Now fix the binaries, per SYNR-341:
