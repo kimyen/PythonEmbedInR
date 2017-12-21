@@ -45,8 +45,8 @@ PYTHON_VERSION<-"3.5"
   # .Call( "isDllVersion") ======> .Call( "isDllVersion", PACKAGE="PythonInR")
   # Reference: http://r.789695.n4.nabble.com/question-re-error-message-package-error-quot-functionName-quot-not-resolved-from-current-namespace-td4663892.html
   library.dynam.unload("PythonEmbedInR", packageRootDir)
-  library.dynam("PythonEmbedInR", pkgname, libname, local=FALSE)
-  
+  library.dynam("PythonEmbedInR", pkgname, libname, local=FALSE, verbose = TRUE)
+
   # On Mac load the ssl libraries
   if (Sys.info()['sysname']=='Darwin') {
     sharedObjectFile<-system.file("lib/libcrypto.1.0.0.dylib", package="PythonEmbedInR")
