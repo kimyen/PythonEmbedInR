@@ -1,7 +1,7 @@
 
 pathToPythonLibraries<-function(libname, pkgname) {
 	# Note: 'pythonLibs' is defined in configure.win
-	pathToPythonLibraries<-file.path(libname, pkgname, "pythonLibs")
+	pathToPythonLibraries<-file.path(libname, pkgname, "pythonLibs\\", Sys.getenv("R_ARCH"))
 	pathToPythonLibraries<-gsub("/", "\\", pathToPythonLibraries, fixed=T)
 	pathToPythonLibraries
 }
