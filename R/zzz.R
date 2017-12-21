@@ -12,22 +12,21 @@ pathToPythonLibraries<-function(libname, pkgname) {
 PYTHON_VERSION<-"3.5"
 
 .onLoad <- function(libname, pkgname) {
+
+  packageRootDir<-file.path(libname, pkgname)
+
   if (Sys.info()['sysname']=="Windows"){
     # add python libraries to Path
     extendedPath <- sprintf("%s%s%s", Sys.getenv("PATH"), .Platform$path.sep, pathToPythonLibraries(libname, pkgname))
     Sys.setenv(PATH=extendedPath)
-    packageRootDir<-file.path(libname, pkgname)
-    Sys.setenv(PYTHONHOME=packageRootDir)
 
     arch <- substring(Sys.getenv("R_ARCH"), 2)
     pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs", arch), file.path(packageRootDir, "pythonLibs", arch, "Lib\\site-packages"), sep=";")
   } else {
-    packageRootDir<-file.path(libname, pkgname)
-    Sys.setenv(PYTHONHOME=packageRootDir)
-
     pythonPathEnv<-file.path(packageRootDir, "lib")
   }
 
+  Sys.setenv(PYTHONHOME=packageRootDir)
   Sys.setenv(PYTHONPATH=pythonPathEnv)
 
   print(libname)
