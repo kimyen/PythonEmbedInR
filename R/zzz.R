@@ -52,12 +52,7 @@ PYTHON_VERSION<-"3.5"
     }
   }
 
-  if (Sys.info()['sysname']=="Windows") {
-    pyConnect(dllDir = paste0(packageRootDir, "/inst/pythonLibs", Sys.getenv("R_ARCH")))
-  } else {
-    pyConnect()
-  }
-
+  pyConnect()
   invisible(NULL)
 }
 

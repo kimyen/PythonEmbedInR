@@ -39,8 +39,11 @@ pyConnectWinDll <- function(dllName, dllDir, majorVersion,
     }
     if (is.null(pyArch)) stop("couldn't detect Python architecture!")
     useAlteredSearchPath <- if (is.null(dllDir)) FALSE else TRUE
-    if ((!is.null(dllName)) & (dllName != "") & (!is.null(dllDir)) & (dllDir != "")){
+    if ((!is.null(dllName)) & (!is.null(dllDir))){
         dllPath <- file.path(dllDir, dllName)
+        print(dllDir)
+        print(dllName)
+        print(dllPath)
         dllVersion <- guessDllVersion(dllPath)
         if (grepl("i386", R.version$arch)){
             if (dllVersion != 32) stop("64 bit dll (Python) can not be linked to 32 bit R!")
