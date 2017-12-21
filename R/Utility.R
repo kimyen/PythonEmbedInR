@@ -84,6 +84,7 @@ makeErrorMsg <- function(){
 }
 
 guessDllVersion <- function(dllPath){
+    print(dllPath)
     f <- file(dllPath, "rb")
     if (readChar(f, 2) != "MZ") return(-2)
     seek(f, 60, rw="rb")
