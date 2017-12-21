@@ -1,7 +1,7 @@
 
 pathToPythonLibraries<-function(libname, pkgname) {
 	# Note: 'pythonLibs' is defined in configure.win
-	pathToPythonLibraries<-file.path(libname, pkgname, "pythonLibs\\", Sys.getenv("R_ARCH"))
+	pathToPythonLibraries<-file.path(libname, pkgname, "pythonLibs", Sys.getenv("R_ARCH"))
 	pathToPythonLibraries<-gsub("/", "\\", pathToPythonLibraries, fixed=T)
 	pathToPythonLibraries
 }
@@ -26,7 +26,7 @@ PYTHON_VERSION<-"3.5"
 	
 	#set pythonhome and pythonpath so python knows where to look for python modules
 	if (Sys.info()['sysname']=="Windows"){
-		pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs\\", Sys.getenv("R_ARCH")), file.path(packageRootDir, "pythonLibs\\", Sys.getenv("R_ARCH"), "\\Lib\\site-packages"), sep=";")
+		pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs", Sys.getenv("R_ARCH")), file.path(packageRootDir, "pythonLibs", Sys.getenv("R_ARCH"), "Lib\\site-packages"), sep=";")
 	}else{
 		pythonPathEnv<-file.path(packageRootDir, "lib")
 	}
