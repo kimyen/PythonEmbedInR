@@ -39,7 +39,7 @@ pyConnectWinDll <- function(dllName, dllDir, majorVersion,
     }
     if (is.null(pyArch)) stop("couldn't detect Python architecture!")
     useAlteredSearchPath <- if (is.null(dllDir)) FALSE else TRUE
-    if ((!is.null(dllName)) & (!is.null(dllDir))){
+    if ((!is.null(dllName)) & (dllName != "") & (!is.null(dllDir)) & (dllDir != "")){
         dllPath <- file.path(dllDir, dllName)
         dllVersion <- guessDllVersion(dllPath)
         if (grepl("i386", R.version$arch)){

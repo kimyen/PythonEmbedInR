@@ -46,13 +46,18 @@ PYTHON_VERSION<-"3.5"
   if (Sys.info()['sysname']=="Linux") {
     # if we build a static library, libpythonX.Xm.a, instead of a dynamically linked one,
     # libpythonX.Xm.so.1.0, then don't do the following
-    sharedObjectFile<-system.file(paste0("lib/libpython", PYTHON_VERSION, "m.so.1.0", package = "PythonEmbedInR"))
+    sharedObjectFile<-system.file(paste0("lib/libpython", PYTHON_VERSION, "m.so.1.0"), package = "PythonEmbedInR")
     if (file.exists(sharedObjectFile)) {
       dyn.load(sharedObjectFile, local = FALSE)
     }
   }
 
-  pyConnect()
+  if (Sys.info()['sysname']=="Windows") {
+    pyConnect(dllDir = paste0(packageRootDir, "/inst/pythonLibs", Sys.getenv("R_ARCH")))
+  } else {
+    pyConnect()
+  }
+
   invisible(NULL)
 }
 
