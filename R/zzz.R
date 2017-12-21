@@ -26,7 +26,7 @@ PYTHON_VERSION<-"3.5"
 	
 	#set pythonhome and pythonpath so python knows where to look for python modules
 	if (Sys.info()['sysname']=="Windows"){
-		pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs"), file.path(packageRootDir, "pythonLibs\\Lib\\site-packages"),sep=";")
+		pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs\\", Sys.getenv("R_ARCH")), file.path(packageRootDir, "pythonLibs\\", Sys.getenv("R_ARCH"), "\\Lib\\site-packages"), sep=";")
 	}else{
 		pythonPathEnv<-file.path(packageRootDir, "lib")
 	}
