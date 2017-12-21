@@ -30,6 +30,15 @@ PYTHON_VERSION<-"3.5"
     pythonPathEnv<-file.path(packageRootDir, "lib")
   }
 
+  print(libname)
+  print(pkgname)
+  print(packageRootDir)
+
+  Sys.setenv(PYTHONHOME=packageRootDir)
+  Sys.setenv(PYTHONPATH=pythonPathEnv)
+
+  library.dynam("PythonEmbedInR", pkgname, libname, local=FALSE)
+
   if (Sys.info()['sysname']=='Darwin') {
     sharedObjectFile <- system.file("lib/libcrypto.1.0.0.dylib", package="PythonEmbedInR")
     dyn.load(sharedObjectFile, local=FALSE)
@@ -45,15 +54,6 @@ PYTHON_VERSION<-"3.5"
       dyn.load(sharedObjectFile, local = FALSE)
     }
   }
-
-  print(libname)
-  print(pkgname)
-  print(packageRootDir)
-
-  Sys.setenv(PYTHONHOME=packageRootDir)
-  Sys.setenv(PYTHONPATH=pythonPathEnv)
-
-  library.dynam("PythonEmbedInR", pkgname, libname, local=FALSE)
 
   pyConnect()
   invisible(NULL)
