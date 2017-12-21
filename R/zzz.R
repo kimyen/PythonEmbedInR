@@ -27,10 +27,6 @@ PYTHON_VERSION<-"3.5"
     pythonPathEnv<-file.path(packageRootDir, "lib")
   }
 
-  print(libname)
-  print(pkgname)
-  print(packageRootDir)
-
   Sys.setenv(PYTHONHOME=packageRootDir)
   Sys.setenv(PYTHONPATH=pythonPathEnv)
 
