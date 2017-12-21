@@ -59,7 +59,7 @@ then
   ## build the binary for MacOS
   for f in ${PACKAGE_NAME}_${PACKAGE_VERSION}.tar.gz
   do
-     R CMD INSTALL --build "$f" --library=../RLIB --no-test-load --force-biarch
+     R CMD INSTALL --build "$f" --library=../RLIB --no-test-load
   done
 
   ## Now fix the binaries, per SYNR-341:
@@ -113,7 +113,7 @@ then
   ## build the binary for Windows
   for f in ${PACKAGE_NAME}_${PACKAGE_VERSION}.tar.gz
   do
-     R CMD INSTALL --build "$f" --library=../RLIB --no-test-load
+     R CMD INSTALL --build "$f" --library=../RLIB --no-test-load --force-biarch
   done
   ## This is very important, otherwise the source packages from the windows build overwrite 
   ## the ones created on the unix machine.
