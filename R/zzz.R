@@ -12,7 +12,6 @@ pathToPythonLibraries<-function(libname, pkgname) {
 PYTHON_VERSION<-"3.5"
 
 .onLoad <- function(libname, pkgname) {
-  print(libname)
   if (Sys.info()['sysname']=="Windows"){
     # add python libraries to Path
     extendedPath <- sprintf("%s%s%s", Sys.getenv("PATH"), .Platform$path.sep, pathToPythonLibraries(libname, pkgname))
@@ -30,6 +29,10 @@ PYTHON_VERSION<-"3.5"
   }
 
   Sys.setenv(PYTHONPATH=pythonPathEnv)
+
+  print(libname)
+  print(pkgname)
+  print(packageRootDir)
 
   library.dynam.unload("PythonEmbedInR", packageRootDir)
   library.dynam("PythonEmbedInR", pkgname, libname, local=FALSE, verbose = TRUE)
