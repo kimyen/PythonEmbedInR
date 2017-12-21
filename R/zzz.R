@@ -14,6 +14,7 @@ PYTHON_VERSION<-"3.5"
 .onLoad <- function(libname, pkgname) {
 
   packageRootDir<-file.path(libname, pkgname)
+  library.dynam.unload("PythonEmbedInR", packageRootDir)
 
   if (Sys.info()['sysname']=="Windows"){
     # add python libraries to Path
@@ -22,35 +23,37 @@ PYTHON_VERSION<-"3.5"
 
     arch <- substring(Sys.getenv("R_ARCH"), 2)
     pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs", arch), file.path(packageRootDir, "pythonLibs", arch, "Lib\\site-packages"), sep=";")
+
+    sharedObjectFile <- system.file(file.path("/inst/pythonLibs",arch,"PythonEmbedInR.dll"), package="PythonEmbedInR")
+    dyn.load(sharedObjectFile, local = FALSE)
   } else {
     pythonPathEnv<-file.path(packageRootDir, "lib")
   }
 
-  Sys.setenv(PYTHONHOME=packageRootDir)
-  Sys.setenv(PYTHONPATH=pythonPathEnv)
+  if (Sys.info()['sysname']=='Darwin') {
+    sharedObjectFile <- system.file("lib/libcrypto.1.0.0.dylib", package="PythonEmbedInR")
+    dyn.load(sharedObjectFile, local=FALSE)
+    sharedObjectFile <- system.file("lib/libssl.1.0.0.dylib", package="PythonEmbedInR")
+    dyn.load(sharedObjectFile, local=FALSE)
+    Sys.setenv(SSL_CERT_FILE = system.file(paste0("lib/python", PYTHON_VERSION, "/site-packages/pip/_vendor/requests/cacert.pem"), package="PythonEmbedInR"))
+  }
+  if (Sys.info()['sysname']=="Linux") {
+    # if we build a static library, libpythonX.Xm.a, instead of a dynamically linked one,
+    # libpythonX.Xm.so.1.0, then don't do the following
+    sharedObjectFile<-system.file(paste0("lib/libpython", PYTHON_VERSION, "m.so.1.0", package = "PythonEmbedInR"))
+    if (file.exists(sharedObjectFile)) {
+      dyn.load(sharedObjectFile, local = FALSE)
+    }
+  }
 
   print(libname)
   print(pkgname)
   print(packageRootDir)
 
-  library.dynam.unload("PythonEmbedInR", packageRootDir)
-  library.dynam("PythonEmbedInR", pkgname, libname, local=FALSE, verbose = TRUE)
+  Sys.setenv(PYTHONHOME=packageRootDir)
+  Sys.setenv(PYTHONPATH=pythonPathEnv)
 
-  if (Sys.info()['sysname']=='Darwin') {
-    sharedObjectFile<-system.file("lib/libcrypto.1.0.0.dylib", package="PythonEmbedInR")
-    dyn.load(sharedObjectFile, local=FALSE)
-    sharedObjectFile<-system.file("lib/libssl.1.0.0.dylib", package="PythonEmbedInR")
-    dyn.load(sharedObjectFile, local=FALSE)
-    Sys.setenv(SSL_CERT_FILE=system.file(paste0("lib/python", PYTHON_VERSION, "/site-packages/pip/_vendor/requests/cacert.pem"), package="PythonEmbedInR"))
-  }
-  if (Sys.info()['sysname']=="Linux") {
-    # if we build a static library, libpythonX.Xm.a, instead of a dynamically linked one,
-    # libpythonX.Xm.so.1.0, then don't do the following
-    sharedObjectFile<-system.file(paste0("lib/libpython", PYTHON_VERSION, "m.so.1.0", package="PythonEmbedInR"))
-    if (file.exists(sharedObjectFile)) {
-      dyn.load(sharedObjectFile, local=FALSE)
-    }
-  }
+  library.dynam("PythonEmbedInR", pkgname, libname, local=FALSE)
 
   pyConnect()
   invisible(NULL)
