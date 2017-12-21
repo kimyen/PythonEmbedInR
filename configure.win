@@ -26,7 +26,7 @@ fi
 unzip python-${RWITHPYTHON_PYTHON_VERSION_EXTENDED}-embed.zip
 
 # per https://bugs.python.org/issue24960 we unzip the file inst/pythonLibs/python35.zip into a folder of the same name
-# our current directory is inst/pythonLibs
+# our current directory is inst/pythonLibs/$R_ARCH
 PYTHON_ZIP_FILE_NAME=python${VERSION_FILE_SUFFIX}.zip
 TEMP_ZIP_FILE=temp-python${VERSION_FILE_SUFFIX}.zip
 mv ${PYTHON_ZIP_FILE_NAME} ${TEMP_ZIP_FILE}
@@ -39,7 +39,7 @@ cd ..
 PIP_INSTALL_SCRIPT=get-pip.py
 wget -O $PIP_INSTALL_SCRIPT https://bootstrap.pypa.io/get-pip.py
 ./python.exe $PIP_INSTALL_SCRIPT
-cd ../..
+cd ../../..
 
 # Now get the include files
 # Note, we don't put them into 'inst' because they aren't needed in the installed package
