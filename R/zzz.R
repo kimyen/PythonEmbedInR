@@ -23,9 +23,6 @@ PYTHON_VERSION<-"3.5"
 
     arch <- substring(Sys.getenv("R_ARCH"), 2)
     pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs", arch), file.path(packageRootDir, "pythonLibs", arch, "Lib\\site-packages"), sep=";")
-
-    sharedObjectFile <- system.file(file.path("inst/pythonLibs", arch,"PythonEmbedInR.dll"), package="PythonEmbedInR")
-    dyn.load(sharedObjectFile)
   } else {
     pythonPathEnv<-file.path(packageRootDir, "lib")
   }
