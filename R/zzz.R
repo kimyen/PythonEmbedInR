@@ -12,7 +12,6 @@ pathToPythonLibraries<-function(libname, pkgname) {
 PYTHON_VERSION<-"3.5"
 
 .onLoad <- function(libname, pkgname) {
-
   packageRootDir<-file.path(libname, pkgname)
   library.dynam.unload("PythonEmbedInR", packageRootDir)
 
@@ -23,6 +22,7 @@ PYTHON_VERSION<-"3.5"
 
     arch <- substring(Sys.getenv("R_ARCH"), 2)
     pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs", arch), file.path(packageRootDir, "pythonLibs", arch, "Lib\\site-packages"), sep=";")
+    print(system.file(file.path("inst/pythonLibs", arch, "python35.dll"), package="PythonEmbedInR"))
   } else {
     pythonPathEnv<-file.path(packageRootDir, "lib")
   }
