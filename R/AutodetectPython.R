@@ -24,7 +24,7 @@ autodetectPython <- function(){
 		dllName <- sprintf("python%i%i.dll", pyMajorVersion, pyMinorVersion)
 	
 		arch <- substring(Sys.getenv("R_ARCH"), 2)
-		pythonDllPath <- system.file(file.path("inst/pythonLibs", arch, dllName), package="PythonEmbedInR")
+		pythonDllPath <- system.file(file.path(dllName), package="PythonEmbedInR")
 		print(pythonDllPath)
     pyArch <- sprintf("%ibit", guessDllVersion(pythonDllPath))
     if (pyArch != rArch) stop(sprintf("Python %s can't be connected with R %s!", pyArch, rArch))
