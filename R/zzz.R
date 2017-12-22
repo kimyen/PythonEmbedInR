@@ -1,9 +1,9 @@
 
 pathToPythonLibraries<-function(libname, pkgname) {
   # Note: 'pythonLibs' is defined in configure.win
-  # removing the '/'
+  # removing the '/' from '/x64' or '/i386'
   arch <- substring(Sys.getenv("R_ARCH"), 2)
-  pathToPythonLibraries<-file.path(libname, pkgname, "pythonLibs", arch)
+  pathToPythonLibraries<-file.path(libname, pkgname, paste0("pythonLibs", arch))
   pathToPythonLibraries<-gsub("/", "\\", pathToPythonLibraries, fixed=T)
   pathToPythonLibraries
 }
@@ -21,8 +21,8 @@ PYTHON_VERSION<-"3.5"
     Sys.setenv(PATH=extendedPath)
 
     arch <- substring(Sys.getenv("R_ARCH"), 2)
-    pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs", arch), file.path(packageRootDir, "pythonLibs", arch, "Lib\\site-packages"), sep=";")
-    print(system.file(file.path("inst/pythonLibs", arch, "python35.dll"), package="PythonEmbedInR"))
+    pythonPathEnv<-paste(file.path(packageRootDir, paste0("pythonLibs", arch)), file.path(packageRootDir, paste0("pythonLibs", arch), "Lib\\site-packages"), sep=";")
+    print(system.file(file.path(paste0("pythonLibs", arch), "python35.dll"), package="PythonEmbedInR"))
   } else {
     pythonPathEnv<-file.path(packageRootDir, "lib")
   }

@@ -13,9 +13,10 @@ else
 	EMBEDDED_ZIP=https://www.python.org/ftp/python/${RWITHPYTHON_PYTHON_VERSION_EXTENDED}/python-${RWITHPYTHON_PYTHON_VERSION_EXTENDED}-embed-win32.zip
 fi
 
-# This creates a folder /pythonLibs$R_ARCH in the installed package.
+# This creates a folder /pythonLibs$ARCH in the installed package.
 # Note:  You can't create /libs which is reserved for the R package installer
-PYTHON_LIB_PATH=inst/pythonLibs$R_ARCH
+ARCH=${R_ARCH#"/"}
+PYTHON_LIB_PATH=inst/pythonLibs$ARCH
 mkdir -p ${PYTHON_LIB_PATH}
 cd ${PYTHON_LIB_PATH}
 wget -O python-${RWITHPYTHON_PYTHON_VERSION_EXTENDED}-embed.zip $EMBEDDED_ZIP
@@ -28,7 +29,7 @@ pwd
 unzip python-${RWITHPYTHON_PYTHON_VERSION_EXTENDED}-embed.zip
 
 # per https://bugs.python.org/issue24960 we unzip the file inst/pythonLibs/python35.zip into a folder of the same name
-# our current directory is inst/pythonLibs/$R_ARCH
+# our current directory is inst/pythonLibs$ARCH
 PYTHON_ZIP_FILE_NAME=python${VERSION_FILE_SUFFIX}.zip
 TEMP_ZIP_FILE=temp-python${VERSION_FILE_SUFFIX}.zip
 mv ${PYTHON_ZIP_FILE_NAME} ${TEMP_ZIP_FILE}
@@ -43,7 +44,7 @@ cd ..
 PIP_INSTALL_SCRIPT=get-pip.py
 wget -O $PIP_INSTALL_SCRIPT https://bootstrap.pypa.io/get-pip.py
 ./python.exe $PIP_INSTALL_SCRIPT
-cd ../../..
+cd ../..
 
 # Now get the include files
 # Note, we don't put them into 'inst' because they aren't needed in the installed package
