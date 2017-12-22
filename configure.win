@@ -8,7 +8,7 @@ VERSION_FILE_SUFFIX=35
 
 install_python() {
   arch=$1
-  if [$arch = "x64"]
+  if [ $arch = "x64" ]
   then
     EMBEDDED_ZIP=https://www.python.org/ftp/python/${RWITHPYTHON_PYTHON_VERSION_EXTENDED}/python-${RWITHPYTHON_PYTHON_VERSION_EXTENDED}-embed-amd64.zip
   else
