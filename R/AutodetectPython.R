@@ -23,9 +23,8 @@ autodetectPython <- function(){
 		pyMinorVersion <- as.integer(5) # get minor version                                
 		dllName <- sprintf("python%i%i.dll", pyMajorVersion, pyMinorVersion)
 	
-		# arch <- substring(Sys.getenv("R_ARCH"), 2)
-		# pythonDllPath <- system.file(file.path("inst/pythonLibs", arch, dllName), package="PythonEmbedInR")
-		pythonDllPath <- system.file(file.path("inst/pythonLibs", dllName), package="PythonEmbedInR")
+		arch <- substring(Sys.getenv("R_ARCH"), 2)
+		pythonDllPath <- system.file(file.path("inst/pythonLibs", arch, dllName), package="PythonEmbedInR")
 		print(arch)
 		print(dllName)
 		print(file.path("inst/pythonLibs", arch, dllName))

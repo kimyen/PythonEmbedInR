@@ -2,9 +2,8 @@
 pathToPythonLibraries<-function(libname, pkgname) {
   # Note: 'pythonLibs' is defined in configure.win
   # removing the '/'
-  # arch <- substring(Sys.getenv("R_ARCH"), 2)
-  # pathToPythonLibraries<-file.path(libname, pkgname, "pythonLibs", arch)
-  pathToPythonLibraries<-file.path(libname, pkgname, "pythonLibs")
+  arch <- substring(Sys.getenv("R_ARCH"), 2)
+  pathToPythonLibraries<-file.path(libname, pkgname, "pythonLibs", arch)
   pathToPythonLibraries<-gsub("/", "\\", pathToPythonLibraries, fixed=T)
   pathToPythonLibraries
 }
@@ -21,11 +20,9 @@ PYTHON_VERSION<-"3.5"
     extendedPath <- sprintf("%s%s%s", Sys.getenv("PATH"), .Platform$path.sep, pathToPythonLibraries(libname, pkgname))
     Sys.setenv(PATH=extendedPath)
 
-    # arch <- substring(Sys.getenv("R_ARCH"), 2)
-    # pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs", arch), file.path(packageRootDir, "pythonLibs", arch, "Lib\\site-packages"), sep=";")
-    # print(system.file(file.path("inst/pythonLibs", arch, "python35.dll"), package="PythonEmbedInR"))
-    pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs"), file.path(packageRootDir, "pythonLibs\\Lib\\site-packages"), sep=";")
-    print(system.file(file.path("pythonLibs", "python35.dll"), package="PythonEmbedInR"))
+    arch <- substring(Sys.getenv("R_ARCH"), 2)
+    pythonPathEnv<-paste(file.path(packageRootDir, "pythonLibs", arch), file.path(packageRootDir, "pythonLibs", arch, "Lib\\site-packages"), sep=";")
+    print(system.file(file.path("inst/pythonLibs", arch, "python35.dll"), package="PythonEmbedInR"))
   } else {
     pythonPathEnv<-file.path(packageRootDir, "lib")
   }
