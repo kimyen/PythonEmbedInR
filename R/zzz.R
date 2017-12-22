@@ -22,7 +22,6 @@ PYTHON_VERSION<-"3.5"
 
     arch <- substring(Sys.getenv("R_ARCH"), 2)
     pythonPathEnv<-paste(file.path(packageRootDir, paste0("pythonLibs", arch)), file.path(packageRootDir, paste0("pythonLibs", arch), "Lib\\site-packages"), sep=";")
-    print(system.file(file.path(paste0("pythonLibs", arch), "python35.dll"), package="PythonEmbedInR"))
   } else {
     pythonPathEnv<-file.path(packageRootDir, "lib")
   }
