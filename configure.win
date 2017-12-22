@@ -71,6 +71,10 @@ PYTHON_SRC_PATH=${PYTHON_ARCHIVE_NAME}
 # relative paths established during this script.  
 echo 'PKG_CFLAGS=-I"'../${PYTHON_SRC_PATH}/Include'" -I"'../${PYTHON_SRC_PATH}/PC'"' > src/Makevars.win
 
-echo 'PKG_LIBS=-L"../inst/pythonLibs${R_ARCH#\"/\"}" -lpython'${VERSION_FILE_SUFFIX}  >> src/Makevars.win
+echo 'ifeq "$(WIN)" "64"' >> src/Makevars.win
+echo 'PKG_LIBS=-L"'../inst/pythonLibsx64'" -lpython'${VERSION_FILE_SUFFIX}  >> src/Makevars.win
+echo 'else' >> src/Makevars.win
+echo 'PKG_LIBS=-L"'../inst/pythonLibsi386'" -lpython'${VERSION_FILE_SUFFIX}  >> src/Makevars.win
+echo 'endif'
 
 cat src/Makevars.win
