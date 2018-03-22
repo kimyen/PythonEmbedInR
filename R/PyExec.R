@@ -31,15 +31,15 @@ pyExecp <- function(code){
     if (nchar(code) > 0){
         if ( pyConnectionCheck() ) return(invisible(NULL))
         if (pyOptions("winPython364")){
-            ret <- try(.Call("py_run_string_single_input", code), silent = TRUE)
+            ret <- try(.Call("py_run_string_single_input", code, PACKAGE="PythonEmbedInR"), silent = TRUE)
             cat(pyGetSimple("__getStdout()")) ## print stdout
-            if (ret == -1){
+            if (ret == -1 || class(ret)=="try-error"){
                 msg <- makeErrorMsg()
-                if (!is.null(msg)) stop(msg)
+                stop(msg)
             }
         }else{
-            ret <- .Call("py_run_string_single_input", code)
-            if (ret == -1) stop("An error has occured while executing Python code.",
+            ret <- .Call("py_run_string_single_input", code, PACKAGE="PythonEmbedInR")
+            if (ret == -1) stop("An error has occurred while executing Python code.",
                                 " See traceback above.")
         }
     }
@@ -72,15 +72,15 @@ pyExec <- function(code){
     if (nchar(code) > 0){
         if ( pyConnectionCheck() ) return(invisible(NULL))
         if (pyOptions("winPython364")){
-            ret <- try(.Call("py_run_simple_string", code), silent = TRUE)
+            ret <- try(.Call("py_run_simple_string", code, PACKAGE="PythonEmbedInR"), silent = TRUE)
             cat(pyGetSimple("__getStdout()")) ## print stdout
-            if (ret == -1){
+            if (ret == -1 || class(ret)=="try-error"){
                 msg <- makeErrorMsg()
-                if (!is.null(msg)) stop(msg)
+                stop(msg)
             }
         }else{
-            ret <- .Call("py_run_simple_string", code)
-            if (ret == -1) stop("An error has occured while executing Python code.",
+            ret <- .Call("py_run_simple_string", code, PACKAGE="PythonEmbedInR")
+            if (ret == -1) stop("An error has occurred while executing Python code.",
                                 " See traceback above.")
         }
     }
@@ -202,28 +202,18 @@ except:
     if (pyOptions("winPython364")){
         ret_val <- try(.Call("PythonInR_Run_String", code, 257L, autoTypecast,
                              mergeNamespaces, override, returnToR, 
-                             simplify), silent = TRUE)
+                             simplify, PACKAGE="PythonEmbedInR"), silent = TRUE)
         cat(pyGetSimple("__getStdout()")) ## print stdout
         msg <- makeErrorMsg()
-        if (!is.null(msg)) stop(msg)
+        if (!is.null(msg) || class(ret_val)=="try-error") stop(msg)
     }else{
         ret_val <- .Call("PythonInR_Run_String", code, 257L, autoTypecast,
-                         mergeNamespaces, override, returnToR, simplify)
+                         mergeNamespaces, override, returnToR, simplify, PACKAGE="PythonEmbedInR")
     }
     # NOTE: the flag returnToR makes also a difference at the c level
     #       if it is FALSE only NULL get's returned!
     if (returnToR) return(ret_val)
     invisible(ret_val)
-}
-
-# An intern smaller version else I get a endless recursion when 
-# I add printStoutErr also to pyExecg
-pyExecgIntern <- function(code, autoTypecast=TRUE, mergeNamespaces=FALSE,
-                          override=TRUE, simplify=TRUE){
-    if ( pyConnectionCheck() ) return(invisible(NULL))
-    ret_val <- try(.Call("PythonInR_Run_String", code, 257L, autoTypecast,
-                     mergeNamespaces, override, 2L, simplify), silent = TRUE)
-    return(ret_val)
 }
 
 #  -----------------------------------------------------------------------------
