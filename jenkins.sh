@@ -92,7 +92,7 @@ then
   	echo "osx artifact was not created"
   	exit 1
   fi  
-elif  [ $label = windows-aws ]
+elif  [ $label = windows-aws ] || [ $label = windows-test ]
 then
   export TZ=UTC
   echo TZ=$TZ
@@ -137,7 +137,7 @@ R -e ".libPaths('../RLIB');\
 # test that load works after detach
 R -e ".libPaths('../RLIB');\
   library(PythonEmbedInR);\
-  detach("package:PythonEmbedInR", unload=TRUE);\
+  detach('package:PythonEmbedInR', unload=TRUE);\
   library(PythonEmbedInR)"
    
 
