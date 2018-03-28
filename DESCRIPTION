@@ -1,6 +1,6 @@
 Package: PythonEmbedInR
 Title: Use an embedded Python from Within R
-Version: 0.2.77
+Version: 0.2.78
 Date: 2018-03-28
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
