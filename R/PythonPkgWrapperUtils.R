@@ -135,12 +135,12 @@ removeNulls <- function(x) {
 # @param module the Python module
 # @param modifyFunctions optional function to modify the returned functions
 # @param functionPrefix optional text to add to the name of the functions
-# @param pyObjectName optional singleton object in python
+# @param pySingletonName optional singleton object in python
 getFunctionInfo <- function(pyPkg,
                             module,
                             modifyFunctions = NULL,
                             functionPrefix = NULL,
-                            pyObjectName = NULL) {
+                            pySingletonName = NULL) {
   pyImport("pyPkgInfo")
   pyImport(pyPkg)
   pyExec(sprintf("functionInfo = pyPkgInfo.getFunctionInfo(%s)", module))
@@ -153,8 +153,8 @@ getFunctionInfo <- function(pyPkg,
   functionInfo <- removeNulls(functionInfo)
 
   functionContainerName <- module
-  if (!is.null(pyObjectName)) {
-    functionContainerName <- pyObjectName
+  if (!is.null(pySingletonName)) {
+    functionContainerName <- pySingletonName
   }
 
   functionInfo <- lapply(X = functionInfo, function(x) {
@@ -281,15 +281,81 @@ cleanUpStackTrace <- function(callable, args) {
 #'  in the given Python module
 #'
 #' @param pyPkg the Python package name
-#' @param module the Python module
+#' @param module the name of the Python module to be wrapped.
 #' @param setGenericCallback the callback to setGeneric defined in the target R package
 #' @param modifyFunctions optional function to modify the returned functions
 #' @param modifyClasses optional function to modify the returned classes
 #' @param functionPrefix optional text to add to the name of the functions
-#' @param pyObjectName optional singleton object in python
+#' @param pySingletonName optional singleton object in python
 #' @param transformReturnObject optional function to change returned values in R
-#' @details generateRdFiles and generateRWrappers should be called with similar
+#' @details
+#'
+#' `generateRdFiles` and `generateRWrappers` should be called with similar
 #'  params to ensure all R wrappers has sufficient documentation.
+#'
+#' `module` can have the same value as `pyPkg` or a module within the Python package.
+#' The value that is passed to `module` parameter must be a fully qualified name.
+#'
+#' `setGeneric` function must be defined in the same environment that `generateRWrappers` is called.
+#' \dontshow{
+#'   callback <- function(name, def) {
+#'     setGeneric(name, def)
+#'   }
+#'
+#'   .onLoad <- function(libname, pkgname) {
+#'     generateRWrappers(pyPkg = "myPythonPackage",
+#'                       module = "myModule",
+#'                       setGenericCallback = callback)
+#'   }
+#' }
+#'
+#' `modifyFunctions` and `modifyClasses` are optional function defined by the caller.
+#' `modifyFunctions` takes an object with the following schema
+#' {'name', 'args', 'doc', 'module'}
+#' and modifies the list of functions found under `module`.
+#' For example, to remove function "myFun" under `module`, one would pass a function as follows:
+#' \dontshow{
+#'   myModifyFunctions <- function(x) {
+#'     if (any(x$name == "myFun")) NULL else x
+#'   }
+#' }
+#'
+#' `modifyClasses` takes an object with the following schema
+#' {'name', 'constructorArgs', 'doc', 'methods'}
+#' and modifies the list of classes found under `module`.
+#' For example, to remove class "MyObj" under `module`, one would pass a function as follows:
+#' \dontshow{
+#'   myModifyClasses <- function(x) {
+#'     if (any(x$name == "MyObj")) NULL else x
+#'   }
+#' }
+#'
+#' `pySingletonName` is used to expose a set Python functions which are an object's methods,
+#' but without exposing the object itself. For example:
+#' \dontshow{
+#'   .onLoad <- function(libname, pkgname) {
+#'     pyImport("synapseclient")
+#'     pyExec("syn = synapseclient.Synapse()")
+#'
+#'     generateRWrappers(pyPkg = "synapseclient",
+#'                       module = "synapseclient.client.Synapse",
+#'                       setGenericCallback = callback,
+#'                       pySingletonName = "syn")
+#'   }
+#' }
+#' `pySingletonName` must be the name of the object defined in Python.
+#'
+#' `transformReturnObject` is used to intercept and modify the values
+#' returned by the auto-generated R functions. It takes an R6 object,
+#' and returned the modified R6 object. For example:
+#' \dontshow{
+#'   myTranform <- function(x) {
+#'     # replace the object name
+#'     class(x) <- "newName"
+#'   }
+#' }
+#'
+#'
 #' @note generateRWrappers should be called in .onLoad()
 #' @examples
 #' \dontshow{
@@ -306,14 +372,14 @@ generateRWrappers <- function(pyPkg,
                               modifyFunctions = NULL,
                               modifyClasses = NULL,
                               functionPrefix = NULL,
-                              pyObjectName = NULL,
+                              pySingletonName = NULL,
                               transformReturnObject = NULL) {
   functionInfo <- getFunctionInfo(
     pyPkg,
     module,
     modifyFunctions,
     functionPrefix,
-    pyObjectName
+    pySingletonName
   )
   classInfo <- getClassInfo(
     pyPkg,
@@ -744,8 +810,49 @@ writeContent <- function(content, name, targetFolder) {
 #' @param keepContent optional wheather the existing files at the target directory
 #'  should be kept
 #' @param templateDir optional path to a template directory
-#' @details generateRdFiles and generateRWrappers should be called with similar
+#' @details
+#'
+#' `generateRdFiles` and `generateRWrappers` should be called with similar
 #'  params to ensure all R wrappers has sufficient documentation.
+#'
+#' `module` can have the same value as `pyPkg` or a module within the Python package.
+#' The value that is passed to `module` parameter must be a fully qualified name.
+#'
+#' `setGeneric` function must be defined in the same environment that `generateRWrappers` is called.
+#' \dontshow{
+#'   callback <- function(name, def) {
+#'     setGeneric(name, def)
+#'   }
+#'
+#'   .onLoad <- function(libname, pkgname) {
+#'     generateRWrappers(pyPkg = "myPythonPackage",
+#'                       module = "myModule",
+#'                       setGenericCallback = callback)
+#'   }
+#' }
+#'
+#' `modifyFunctions` and `modifyClasses` are optional function defined by the caller.
+#' `modifyFunctions` takes an object with the following schema
+#' {'name', 'args', 'doc', 'module'}
+#' and modifies the list of functions found under `module`.
+#' For example, to remove function "myFun" under `module`, one would pass a function as follows:
+#' \dontshow{
+#'   myModifyFunctions <- function(x) {
+#'     if (any(x$name == "myFun")) NULL else x
+#'   }
+#' }
+#'
+#' `modifyClasses` takes an object with the following schema
+#' {'name', 'constructorArgs', 'doc', 'methods'}
+#' and modifies the list of classes found under `module`.
+#' For example, to remove class "MyObj" under `module`, one would pass a function as follows:
+#' \dontshow{
+#'   myModifyClasses <- function(x) {
+#'     if (any(x$name == "MyObj")) NULL else x
+#'   }
+#' }
+#'
+#'
 #' @note The generated .Rd files is localed in srcRootDir/auto-man. One must copy
 #'  all .Rd files to their man folder and make sure that the language being used in
 #'  these documents are friendly to R users.
