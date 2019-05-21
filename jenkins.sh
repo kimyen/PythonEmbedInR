@@ -94,19 +94,21 @@ elif [[ $label = $MAC_LABEL_PREFIX* ]]; then
   	exit 1
   fi  
 elif  [[ $label = $WINDOWS_LABEL_PREFIX* ]]; then
-  export TZ=UTC
-  echo TZ=$TZ
-
-  ## build the package, including the vignettes
-  # for some reason latex is not on the path.  So we add it.
-  export PATH="/c/RTools/bin:$PATH:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/x64:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/i386"
-  echo $PATH
   # make sure there are no stray .tar.gz files
   # 'set +e' keeps the script from terminating if there are no .tgz files
   set +e
   rm ${PACKAGE_NAME}*.tar.gz
   rm ${PACKAGE_NAME}*.tgz
   set -e
+
+  export TZ=UTC
+  echo TZ=$TZ
+  ## build the package, including the vignettes
+  # for some reason latex is not on the path.  So we add it.
+  OLD_PATH = $PATH
+  export PATH="/c/RTools/bin:$PATH:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/x64:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/i386"
+  echo $PATH
+  zip --version
   R CMD build ./
   # now there should be exactly one ${PACKAGE_NAME}*.tar.gz file
 
@@ -115,6 +117,7 @@ elif  [[ $label = $WINDOWS_LABEL_PREFIX* ]]; then
   do
      R CMD INSTALL --build "$f" --library=../RLIB --no-test-load --merge-multiarch
   done
+  export PATH=$OLD_PATH
   ## This is very important, otherwise the source packages from the windows build overwrite 
   ## the ones created on the unix machine.
   rm -f ${PACKAGE_NAME}*.tar.gz
