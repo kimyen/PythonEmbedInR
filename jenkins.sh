@@ -99,7 +99,7 @@ elif  [[ $label = $WINDOWS_LABEL_PREFIX* ]]; then
 
   ## build the package, including the vignettes
   # for some reason latex is not on the path.  So we add it.
-  export PATH="$PATH:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/x64:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/i386"
+  export PATH="/c/RTools/bin:$PATH:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/x64:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/i386"
   echo $PATH
   # make sure there are no stray .tar.gz files
   # 'set +e' keeps the script from terminating if there are no .tgz files
