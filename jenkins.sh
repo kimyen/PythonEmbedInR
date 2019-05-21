@@ -105,7 +105,7 @@ elif  [[ $label = $WINDOWS_LABEL_PREFIX* ]]; then
   echo TZ=$TZ
   ## build the package, including the vignettes
   # for some reason latex is not on the path.  So we add it.
-  OLD_PATH = $PATH
+  export OLD_PATH=$PATH
   export PATH="/c/RTools/bin:$PATH:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/x64:/cygdrive/c/Program Files/MiKTeX 2.9/miktex/bin/i386"
   echo $PATH
   zip --version
